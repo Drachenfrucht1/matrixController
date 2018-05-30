@@ -27,6 +27,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,9 +42,18 @@ public class MainWindow extends Application {
   public static MatrixController controller;
   private Stage window;
   private GridPane grid;
+  private @Getter ControlPanel controlPanel;
+  private CustomEffectPanel customPanel;
+
+  private MainWindow instance;
 
   public void start(Stage primaryStage) throws Exception {
+    instance = this;
+
     window = primaryStage;
+
+    controlPanel = new ControlPanel();
+    customPanel = new CustomEffectPanel();
 
     //Menubar
     MenuBar menu = new MenuBar();
@@ -93,11 +103,26 @@ public class MainWindow extends Application {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    controlPanelB.setOnAction(e -> new ControlPanel());
+    controlPanelB.setOnAction(e -> controlPanel.show());
 
     Tooltip controlPanelT = new Tooltip();
     controlPanelT.setText("Kontrollpanel");
     controlPanelB.setTooltip(controlPanelT);
+    //Custome Effect Panel
+    Button customPanelB = new Button();
+    customPanelB.setPrefSize(50, 50);
+    try {
+      Image image = new Image(new FileInputStream(new File("icons\\confetti.png")), 30, 30, false, true);
+      ImageView imageV = new ImageView(image);
+      customPanelB.setGraphic(imageV);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    customPanelB.setOnAction(e -> customPanel.show());
+
+    Tooltip customPanelT = new Tooltip();
+    customPanelT.setText("Kontrollpanel");
+    customPanelB.setTooltip(controlPanelT);
 
     //Scene editor
     Button sceneEditorB = new Button();
@@ -109,14 +134,14 @@ public class MainWindow extends Application {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    sceneEditorB.setOnAction(e -> new SceneEditor());
+    sceneEditorB.setOnAction(e -> new SceneEditor(instance));
 
-    Tooltip scenenEditorT = new Tooltip();
-    sceneEditorB.setText("Szenen Editor");
-    sceneEditorB.setTooltip(scenenEditorT);
+    Tooltip sceneEditorT = new Tooltip();
+    sceneEditorT.setText("Szenen Editor");
+    sceneEditorB.setTooltip(sceneEditorT);
     //Party module
     Button partyModuleB = new Button();
-    sceneEditorB.setPrefSize(50, 50);
+    partyModuleB.setPrefSize(50, 50);
     try {
       Image image = new Image(new FileInputStream(new File("icons\\dj.png")), 30, 30, false, true);
       ImageView imageV = new ImageView(image);
@@ -127,11 +152,26 @@ public class MainWindow extends Application {
     partyModuleB.setOnAction(e -> new PartyModule());
 
     Tooltip partyModuleT = new Tooltip();
-    partyModuleT.setText("Szenen Editor");
-    partyModuleB.setTooltip(scenenEditorT);
+    partyModuleT.setText("Party Module");
+    partyModuleB.setTooltip(partyModuleT);
+    //All Black
+    Button allBlackB = new Button();
+    allBlackB.setPrefSize(50, 50);
+    try {
+      Image image = new Image(new FileInputStream(new File("icons\\rounded-black-square-shape.png")), 30, 30, false, true);
+      ImageView imageV = new ImageView(image);
+      allBlackB.setGraphic(imageV);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    allBlackB.setOnAction(e -> controller.getSerial().sendAllBlack());
+
+    Tooltip allBlackT = new Tooltip();
+    allBlackT.setText("Alles schwarz");
+    allBlackB.setTooltip(allBlackT);
     //
     HBox toolbar = new HBox();
-    toolbar.getChildren().addAll(controlPanelB, sceneEditorB, partyModuleB);
+    toolbar.getChildren().addAll(controlPanelB, customPanelB, sceneEditorB, partyModuleB, allBlackB);
 
     //North
     VBox north = new VBox();

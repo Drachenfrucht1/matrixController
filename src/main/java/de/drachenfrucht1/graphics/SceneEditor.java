@@ -25,7 +25,7 @@ public class SceneEditor {
   private Stage window;
   private ArrayList<Pixel> pixels = new ArrayList<>();
 
-  public SceneEditor() {
+  public SceneEditor(MainWindow mainWindow) {
     window = new Stage();
 
     //North
@@ -58,7 +58,7 @@ public class SceneEditor {
 
       de.drachenfrucht1.app.Scene newScene = new de.drachenfrucht1.app.Scene(nameF.getText(), colors, Integer.parseInt(fadetimeF.getText()));
       MainWindow.controller.getProject().addScene(newScene);
-      newScene.fade();
+      mainWindow.getControlPanel().reload();
       window.close();
     });
     //

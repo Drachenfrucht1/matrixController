@@ -113,7 +113,12 @@ public class SerialComm {
     if (!connected) return;
     port.closePort();
     connected = false;
-    sendThread.stop();
+    sendAllBlack();
+    try {
+      sendThread.join();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -145,6 +150,16 @@ public class SerialComm {
   public void clearQueue() {
     queue.clear();
     queue2.clear();
+  }
+
+  public void sendAllBlack() {
+    Color[][] colors = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getWidth()];
+    for (int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
+      for (int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
+        colors[x][y] = Color.BLACK;
+      }
+    }
+    addUpdate(colors);
   }
 
   public int queueSize() {
