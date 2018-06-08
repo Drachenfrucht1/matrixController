@@ -25,7 +25,7 @@ public class SceneEditor {
   private Stage window;
   private ArrayList<Pixel> pixels = new ArrayList<>();
 
-  public SceneEditor(MainWindow mainWindow) {
+  public SceneEditor(MainWindow mainWindow, ScenenEditorMode mode) {
     window = new Stage();
 
     //North
@@ -40,33 +40,57 @@ public class SceneEditor {
     GridPane grid = new GridPane();
     grid.setPrefSize(400, 300);
 
+    HBox south = new HBox();
+
     //South
     Label fadetimeL = new Label("Fadetime in ms: ");
     TextField fadetimeF = new TextField();
     fadetimeF.setText("1000");
+    if(mode == ScenenEditorMode.Scenes) {
+      south.getChildren().addAll(fadetimeL, fadetimeF);
+    }
     //
     Button save = new Button("Save");
-    save.setOnAction(e -> {
-      int index = 0;
-      Color[][] colors = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getHeight()];
-      for (int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
-        for (int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
-          colors[x][y] = pixels.get(index).getColor();
-          index++;
+    if(mode == ScenenEditorMode.Scenes) {
+      save.setOnAction(e -> {
+        int index = 0;
+        Color[][] colors = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getHeight()];
+        for (int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
+          for (int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
+            colors[x][y] = pixels.get(index).getColor();
+            index++;
+          }
         }
-      }
 
-      de.drachenfrucht1.app.Scene newScene = new de.drachenfrucht1.app.Scene(nameF.getText(), colors, Integer.parseInt(fadetimeF.getText()));
-      MainWindow.controller.getProject().addScene(newScene);
-      mainWindow.getControlPanel().reload();
-      window.close();
-    });
+        de.drachenfrucht1.app.Scene newScene = new de.drachenfrucht1.app.Scene(nameF.getText(), colors, Integer.parseInt(fadetimeF.getText()));
+        MainWindow.controller.getProject().addScene(newScene);
+        window.close();
+      });
+    } else if(mode == ScenenEditorMode.OverlayScenes) {
+      save.setOnAction(e -> {
+        int index = 0;
+        Color[][] colors = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getHeight()];
+        for (int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
+          for (int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
+            if(pixels.get(index).getColor() == Color.BLACK) {
+              colors[x][y] = Color.TRANSPARENT;
+            } else {
+              colors[x][y] = pixels.get(index).getColor();
+            }
+            index++;
+          }
+        }
+
+        de.drachenfrucht1.app.OverlayScene newScene = new de.drachenfrucht1.app.OverlayScene(nameF.getText(), colors);
+        MainWindow.controller.getProject().getOverlayScenes().add(newScene);
+        window.close();
+      });
+    }
     //
     Button cancel = new Button("Cancel");
     cancel.setOnAction(e -> window.close());
 
-    HBox south = new HBox();
-    south.getChildren().addAll(fadetimeL, fadetimeF, save, cancel);
+    south.getChildren().addAll(save, cancel);
 
     BorderPane pane = new BorderPane();
     pane.setTop(north);
@@ -96,5 +120,10 @@ public class SceneEditor {
         pixels.add(pixel);
       }
     }
+  }
+
+  public enum ScenenEditorMode {
+    Scenes,
+    OverlayScenes
   }
 }

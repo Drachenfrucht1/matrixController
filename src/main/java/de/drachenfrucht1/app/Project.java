@@ -23,6 +23,7 @@ public class Project {
   private @Getter int leds;
   private @Getter ArrayList<Scene> scenes = new ArrayList<>();
   private @Getter ArrayList<Effect> effects = new ArrayList<>();
+  private @Getter ArrayList<OverlayScene> overlayScenes = new ArrayList<>();
 
 
   public Project(String name, int width, int height) {

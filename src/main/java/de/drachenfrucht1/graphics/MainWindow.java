@@ -4,12 +4,15 @@ import de.drachenfrucht1.app.MatrixController;
 import de.drachenfrucht1.app.Pixel;
 import de.drachenfrucht1.app.PixelMode;
 import de.drachenfrucht1.app.Project;
+import de.drachenfrucht1.graphics.ControlPanel.ControllPanelMode;
+import de.drachenfrucht1.graphics.SceneEditor.ScenenEditorMode;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -40,7 +43,7 @@ import java.io.FileInputStream;
 public class MainWindow extends Application {
 
   public static MatrixController controller;
-  private Stage window;
+  private @Getter Stage window;
   private GridPane grid;
   private @Getter ControlPanel controlPanel;
   private CustomEffectPanel customPanel;
@@ -61,15 +64,11 @@ public class MainWindow extends Application {
     //
     Menu project = new Menu("Projekt");
     //
-    MenuItem newI = new MenuItem("New");
+    MenuItem newI = new MenuItem("Neu...");
     newI.setAccelerator(KeyCombination.keyCombination("SHORTCUT+N"));
-    newI.setOnAction(e -> {
-      controller.setProject(new Project("Unnamed", 10, 10));
-      reload();
-      window.setTitle("Matrix Controller - " + controller.getProject().getName());
-    });
+    newI.setOnAction(e -> new CreateProject(instance));
     //
-    MenuItem openI = new MenuItem("Open");
+    MenuItem openI = new MenuItem("Öffnen...");
     openI.setAccelerator(KeyCombination.keyCombination("SHORTCUT+O"));
     openI.setOnAction(e -> {
       FileChooser fc = new FileChooser();
@@ -83,13 +82,25 @@ public class MainWindow extends Application {
       }
     });
     //
-    MenuItem exitI = new MenuItem("Exit");
+    MenuItem saveI = new MenuItem("Speichern...");
+    saveI.setAccelerator(KeyCombination.keyCombination("SHORTCUT+S"));
+    saveI.setOnAction(e -> {
+      FileChooser fc = new FileChooser();
+      fc.getExtensionFilters().add(new ExtensionFilter("Matrix Controller Project", "*.mcp"));
+      fc.setInitialDirectory(new File("."));
+      File selected = fc.showSaveDialog(window);
+      if(selected != null) {
+        controller.getProject().save(selected);
+      }
+    });
+    //
+    MenuItem exitI = new MenuItem("Schließen");
     exitI.setOnAction(e -> {
       controller.getSerial().disconnect();
       System.exit(0);
     });
     //
-    project.getItems().addAll(newI, openI, new SeparatorMenuItem(), exitI);
+    project.getItems().addAll(newI, openI, saveI, new SeparatorMenuItem(), exitI);
     menu.getMenus().add(project);
 
     //Toolbar
@@ -103,11 +114,24 @@ public class MainWindow extends Application {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    controlPanelB.setOnAction(e -> controlPanel.show());
 
+    ContextMenu controllPanelM = new ContextMenu();
+    MenuItem scenesC = new MenuItem("Szenen");
+    scenesC.setOnAction(e -> controlPanel.show(ControllPanelMode.Scenes));
+    MenuItem oScenesC = new MenuItem("OverlaySzenen");
+    oScenesC.setOnAction(e -> controlPanel.show(ControllPanelMode.OverlayScenes));
+    MenuItem effectC = new MenuItem("Effekte");
+    effectC.setOnAction(e -> controlPanel.show(ControllPanelMode.Effects));
+
+    controllPanelM.getItems().addAll(scenesC, oScenesC, effectC);
+
+    controlPanelB.setOnAction(e -> controllPanelM.show(window));
+
+    controlPanelB.setContextMenu(controllPanelM);
     Tooltip controlPanelT = new Tooltip();
     controlPanelT.setText("Kontrollpanel");
     controlPanelB.setTooltip(controlPanelT);
+
     //Custome Effect Panel
     Button customPanelB = new Button();
     customPanelB.setPrefSize(50, 50);
@@ -121,8 +145,8 @@ public class MainWindow extends Application {
     customPanelB.setOnAction(e -> customPanel.show());
 
     Tooltip customPanelT = new Tooltip();
-    customPanelT.setText("Kontrollpanel");
-    customPanelB.setTooltip(controlPanelT);
+    customPanelT.setText("Custom Effekte");
+    customPanelB.setTooltip(customPanelT);
 
     //Scene editor
     Button sceneEditorB = new Button();
@@ -134,7 +158,18 @@ public class MainWindow extends Application {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    sceneEditorB.setOnAction(e -> new SceneEditor(instance));
+
+    ContextMenu scenenEditorM = new ContextMenu();
+    MenuItem scenesE = new MenuItem("Szenen");
+    scenesE.setOnAction(e -> new SceneEditor(instance, ScenenEditorMode.Scenes));
+    MenuItem oScenesE = new MenuItem("OverlaySzenen");
+    oScenesE.setOnAction(e -> new SceneEditor(instance, ScenenEditorMode.OverlayScenes));
+
+    scenenEditorM.getItems().addAll(scenesE, oScenesE);
+
+    sceneEditorB.setOnAction(e -> scenenEditorM.show(window));
+
+    sceneEditorB.setContextMenu(scenenEditorM);
 
     Tooltip sceneEditorT = new Tooltip();
     sceneEditorT.setText("Szenen Editor");
@@ -209,20 +244,45 @@ public class MainWindow extends Application {
     window.setTitle("Matrix Controller - " + controller.getProject().getName());
 
     window.setResizable(true);
-    window.show();
 
     //load all pixel tiles
     reload();
+
+    makeResponsive();
+
+    window.show();
+  }
+
+  private void makeResponsive() {
+    window.widthProperty().addListener(e -> {
+      grid.setPrefSize(window.getWidth()-50, window.getHeight()-100);
+      int width = (int) (window.getWidth()-50) / controller.getProject().getWidth();
+      int height = (int) (window.getHeight()-100) / controller.getProject().getHeight();
+      for(Pixel p : controller.getPixels()) {
+        p.setPrefWidth(width);
+        p.setPrefHeight(height);
+      }
+    });
+
+    window.heightProperty().addListener(e -> {
+      int width = (int) grid.getWidth() / controller.getProject().getWidth();
+      int height = (int) grid.getHeight() / controller.getProject().getHeight();
+      for(Pixel p : controller.getPixels()) {
+        p.setPrefWidth(width);
+        p.setPrefHeight(height);
+      }
+    });
   }
 
   /**
    * FUNCTION: reload()
    * PURPOSE: create a pixels matching the ones on the project
    */
-  private void reload() {
+  protected void reload() {
     grid.getChildren().clear();
-    int width = (int) grid.getWidth() / controller.getProject().getWidth();
-    int height = (int) grid.getHeight() / controller.getProject().getHeight();
+    controller.getPixels().clear();
+    int width = (int) (window.getWidth()-50) / controller.getProject().getWidth();
+    int height = (int) (window.getHeight()-100) / controller.getProject().getHeight();
     for (int x = 0; x < controller.getProject().getWidth(); x++) {
       for (int y = 0; y < controller.getProject().getHeight(); y++) {
         Pixel pixel = new Pixel(window, PixelMode.mainWindow);

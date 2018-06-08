@@ -66,7 +66,7 @@ public class CustomEffectPanel {
     window.getIcons().addAll(icon64);
 
     window.setResizable(false);
-    window.setTitle("KontrollPanel");
+    window.setTitle("KontrollPanel - Custom Effekte");
   }
 
   public void reload() {
@@ -81,7 +81,13 @@ public class CustomEffectPanel {
           b.setStyle("-fx-font-size: 8px;");
           b.setText(effects.get(i).getName());
           final CustomeEffect effect = effects.get(i);
-          b.setOnAction(e -> effect.run(MainWindow.controller.getProject().getWidth(), MainWindow.controller.getProject().getHeight()));
+          b.setOnAction(e -> {
+            if(effect.isRunning()) {
+              effect.stop();
+            } else {
+              effect.run(MainWindow.controller.getProject().getWidth(), MainWindow.controller.getProject().getHeight());
+            }
+          });
         }
       }
     } catch (IndexOutOfBoundsException e) {

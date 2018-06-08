@@ -1,5 +1,7 @@
 package de.drachenfrucht1.custome;
 
+import de.drachenfrucht1.effects.TestText;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -23,6 +25,12 @@ public class EffectLoader {
     ClassLoader cl = new URLClassLoader(fileArrayToURLArray(jars));
     List<Class<CustomeEffect>> effectClasses = extractClassesFromJARs(jars, cl);
 
+    ClassLoader cl2 = ClassLoader.getSystemClassLoader();
+    try {
+      effectClasses.add((Class<CustomeEffect>)cl2.loadClass("de.drachenfrucht1.effects.TestText"));
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    }
     return createCustomeEffects(effectClasses);
   }
 

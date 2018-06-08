@@ -1,5 +1,6 @@
 package de.drachenfrucht1.app;
 
+import de.drachenfrucht1.graphics.MainWindow;
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import lombok.Getter;
@@ -18,8 +19,10 @@ public class MatrixController {
   private @Getter SerialComm serial;
   private @Getter ArrayList<Pixel> pixels = new ArrayList<>();
 
+  private @Getter @Setter OverlayScene overlay;
+
   public MatrixController() {
-    project = new Project("Unnamed", 3, 3);
+    project = new Project("Unnamed", 13, 10);
     serial = new SerialComm();
   }
 
@@ -36,7 +39,22 @@ public class MatrixController {
         index++;
       }
     }
-    serial.addUpdate(colors);
+    serial.addUpdate(applyOverlay(colors));
+  }
+
+  public Color[][] applyOverlay(Color[][] input) {
+    if(overlay == null) overlay = OverlayScene.getBlankOverlay();
+    Color[][] pixels = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getHeight()];
+    for(int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
+      for(int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
+        if(overlay.getPixels()[x][y] == Color.TRANSPARENT) {
+          pixels[x][y] = input[x][y];
+        } else {
+          pixels[x][y] = overlay.getPixels()[x][y];
+        }
+      }
+    }
+    return pixels;
   }
 
   public void updatePixel(Color[][] colors) {

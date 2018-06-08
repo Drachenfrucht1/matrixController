@@ -274,7 +274,7 @@ public class PartyModule {
               index++;
             }
           }
-          MainWindow.controller.getSerial().addUpdate(step);
+          MainWindow.controller.getSerial().addUpdate(MainWindow.controller.applyOverlay(step));
         }
         long needed;
         if((needed = ChronoUnit.MILLIS.between(time1, ZonedDateTime.now())) < beat) {

@@ -153,7 +153,7 @@ public class SerialComm {
   }
 
   public void sendAllBlack() {
-    Color[][] colors = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getWidth()];
+    Color[][] colors = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getHeight()];
     for (int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
       for (int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
         colors[x][y] = Color.BLACK;

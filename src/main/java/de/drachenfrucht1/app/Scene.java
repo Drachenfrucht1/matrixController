@@ -42,7 +42,7 @@ class Scene {
           index++;
         }
       }
-      MainWindow.controller.getSerial().addUpdate(step);
+      MainWindow.controller.getSerial().addUpdate(MainWindow.controller.applyOverlay(step));
     }
   }
 }
