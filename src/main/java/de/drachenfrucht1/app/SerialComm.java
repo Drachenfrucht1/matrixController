@@ -3,7 +3,11 @@ package de.drachenfrucht1.app;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
+import com.google.gson.Gson;
+import com.sun.corba.se.impl.monitoring.MonitoredAttributeInfoImpl;
 import de.drachenfrucht1.graphics.MainWindow;
+import de.drachenfrucht1.webServer.WebServerUpdate;
+import de.drachenfrucht1.webServer.WebServerUpdate.Update;
 import javafx.scene.paint.Color;
 import lombok.Getter;
 
@@ -50,13 +54,15 @@ public class SerialComm {
         msg += "!";
         last = msg;
       }
+      //TODO bytes anstatt string schicken
       byte[] b = last.getBytes();
       port.writeBytes(b, b.length);
       MainWindow.controller.updatePixel(last2);
+      MainWindow.controller.getServer().getHandler().sendUpdate(new WebServerUpdate(last2, MainWindow.controller.getProject().getWidth(), MainWindow.controller.getProject().getHeight(), Update.pixel));
       try {
         int needed = (int) ChronoUnit.MILLIS.between(time1, ZonedDateTime.now());
         System.out.println("Needed: " + needed);
-        if (needed < 16) Thread.sleep(16 - needed);
+        if (needed < 80) Thread.sleep(80 - needed);
       } catch (Exception e) {
         e.printStackTrace();
       }

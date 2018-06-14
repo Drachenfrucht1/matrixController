@@ -42,24 +42,25 @@ public class PartyModule {
   private int fadeTime = 0;
   private int beat = 300;
 
-  private Led[][] next = new Led[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getWidth()];
-  //private boolean[][] activatedLeds = new boolean[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getWidth()];
-  private boolean[][] activatedLeds = {{true, true, true}, {true, true, true}, {true, true, true}};
+  private Led[][] next;
+  private boolean[][] activatedLeds;
 
   //party send thread
-  Thread party;
+  private Thread party;
 
   //Beat
   boolean recording = false;
-  ZonedDateTime firstT;
+  private ZonedDateTime firstT;
 
   //ui elements
-  CheckBox blackC;
-  CheckBox mixC;
-  Slider redS;
-  Slider greenS;
-  Slider blueS;
-  TextField fadeT;
+  private CheckBox blackC;
+  private CheckBox mixC;
+  private Slider redS;
+  private Slider greenS;
+  private Slider blueS;
+  private TextField fadeT;
+
+  private Button start;
 
   public PartyModule() {
     window = new Stage();
@@ -106,8 +107,8 @@ public class PartyModule {
     beatB.setOnAction(e -> {
       if(recording) {
         setBeat((int)ChronoUnit.MILLIS.between(firstT, ZonedDateTime.now()));
-        int bpm = 1000/beat * 60;
-        window.setTitle("Party Module - BPM: " + bpm);
+        double bpm = ((double)1000/beat) * 60.0;
+        window.setTitle("Party Module - BPM: " + Math.floor(bpm));
         beatB.setStyle("-fx-background-color: #ccd4e2;");
         recording = false;
       } else {
@@ -121,7 +122,7 @@ public class PartyModule {
     save.setPrefSize(50, 50);
     save.setOnAction(e -> save());
 
-    Button start = new Button();
+    start = new Button();
     start.setPrefSize(50, 50);
     try {
       Image image = new Image(new FileInputStream(new File("icons\\dj.png")), 30, 30, false, true);
@@ -131,36 +132,7 @@ public class PartyModule {
       e.printStackTrace();
     }
 
-    start.setOnAction(e -> {
-      if(activated) {
-        activated = false;
-        try {
-          Image image = new Image(new FileInputStream(new File("icons\\dj.png")), 30, 30, false, true);
-          ImageView imageV = new ImageView(image);
-          start.setGraphic(imageV);
-        } catch (Exception ex) {
-          ex.printStackTrace();
-        }
-        try {
-          party.join();
-          System.out.println("Party stopped");
-        } catch (InterruptedException e1) {
-          e1.printStackTrace();
-        }
-      } else {
-        activated = true;
-        try {
-          Image image = new Image(new FileInputStream(new File("icons\\dj-bunt.png")), 30, 30, false, true);
-          ImageView imageV = new ImageView(image);
-          start.setGraphic(imageV);
-        } catch (Exception ex) {
-          ex.printStackTrace();
-        }
-        save();
-        createParty();
-        party.start();
-      }
-    });
+    start.setOnAction(e -> toggleParty());
 
     GridPane grid = new GridPane();
     GridPane.setConstraints(redL, 0, 0);
@@ -190,7 +162,41 @@ public class PartyModule {
 
     window.setOnCloseRequest(e -> activated = false);
     window.setTitle("Party Module");
+  }
+
+  public void show() {
     window.show();
+  }
+
+  public void toggleParty() {
+    if(activated) {
+      activated = false;
+      try {
+        Image image = new Image(new FileInputStream(new File("icons\\dj.png")), 30, 30, false, true);
+        ImageView imageV = new ImageView(image);
+        start.setGraphic(imageV);
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+      try {
+        party.join();
+        System.out.println("Party stopped");
+      } catch (InterruptedException e1) {
+        e1.printStackTrace();
+      }
+    } else {
+      activated = true;
+      try {
+        Image image = new Image(new FileInputStream(new File("icons\\dj-bunt.png")), 30, 30, false, true);
+        ImageView imageV = new ImageView(image);
+        start.setGraphic(imageV);
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+      save();
+      createParty();
+      party.start();
+    }
   }
 
   private void save() {
@@ -203,12 +209,15 @@ public class PartyModule {
   }
 
   private void createParty() {
+    next = new Led[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getWidth()];
+    activatedLeds = new boolean[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getWidth()];
     party = new Thread(() -> {
       Random random = new Random();
 
       for (int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
         for (int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
           next[x][y] = new Led();
+          activatedLeds[x][y] = true;
         }
       }
       while(activated) {
@@ -244,7 +253,7 @@ public class PartyModule {
           fadeTime = beat-20;
         }
 
-        int steps = fadeTime/16;
+        int steps = fadeTime/80;
 
         if(steps == 0) steps = 1;
 

@@ -5,8 +5,8 @@
 #include <Adafruit_GFX.h>
 
 const int DIN = 6;
-const int width = 3;
-const int height = 3;
+const int width = 13;
+const int height = 10;
 
 String color, r, g, b;
 
@@ -28,7 +28,6 @@ void loop() {
     int time1 = millis();
     char data[byteLength];
     Serial.readBytesUntil('!', data, byteLength);
-    //Serial.println(data);
     Serial.flush();
     
     int i = 0;

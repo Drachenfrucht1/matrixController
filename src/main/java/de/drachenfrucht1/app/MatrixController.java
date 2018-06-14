@@ -1,6 +1,7 @@
 package de.drachenfrucht1.app;
 
 import de.drachenfrucht1.graphics.MainWindow;
+import de.drachenfrucht1.webServer.Server;
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import lombok.Getter;
@@ -20,6 +21,8 @@ public class MatrixController {
   private @Getter ArrayList<Pixel> pixels = new ArrayList<>();
 
   private @Getter @Setter OverlayScene overlay;
+
+  private @Getter @Setter Server server;
 
   public MatrixController() {
     project = new Project("Unnamed", 13, 10);

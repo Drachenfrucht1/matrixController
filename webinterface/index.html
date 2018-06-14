@@ -2,9 +2,72 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Webinterface</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 </head>
 <body>
+    <!--Gefixte Navbar-->
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper indigo lighten-1">
+                <ul class="center hide-on-med-and-down">
+                    <li><a id="party_module">Party Module</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <!--Main Grid-->
+    <main class="section">
+        <div id="main-grid" class="container" style="margin-top: 10px;">
 
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+    <script>
+        let established = false;
+
+        let connection = new WebSocket("ws://" + window.location.host + "/ws_connect");
+        connection.onopen = function () {
+            console.log("Connection established");
+        }
+
+        connection.onmessage = function (e) {
+
+            let data = JSON.parse(blobToString(e.data));
+            console.dir(data);
+
+            if(data.mode === "pixel") {
+                for(let y = 0; y < data.height; y++) {
+                    if(!established) {
+                        $("#main-grid").append("<div class='row' id='row" + y + "'>");
+                    }
+                    for(let x = 0; x < data.width; x++) {
+                        let r = data.pixels[x][y].red * 255;
+                        let g = data.pixels[x][y].green * 255;
+                        let b = data.pixels[x][y].blue * 255;
+                        if(established) {
+                            $("row"+  y).children("button" + x).css("background-color", "rgb(" + r + ", " + g + ", "+  b + ")");
+                        } else {
+                            $("#row" + y).append("<button id='button" + x + "' style='background-color: rgb(" + r + ", " + g + ", "+  b + ")'></button>");
+                        }
+
+                    }
+                }
+                established = true;
+            }
+        }
+
+        function blobToString(b) {
+            var u, x;
+            u = URL.createObjectURL(b);
+            x = new XMLHttpRequest();
+            x.open('GET', u, false); // although sync, you're not fetching over internet
+            x.send();
+            URL.revokeObjectURL(u);
+            return x.responseText;
+        }
+    </script>
 </body>
 </html>

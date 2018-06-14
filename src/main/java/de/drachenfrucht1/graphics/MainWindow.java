@@ -6,6 +6,7 @@ import de.drachenfrucht1.app.PixelMode;
 import de.drachenfrucht1.app.Project;
 import de.drachenfrucht1.graphics.ControlPanel.ControllPanelMode;
 import de.drachenfrucht1.graphics.SceneEditor.ScenenEditorMode;
+import de.drachenfrucht1.webServer.Server;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -47,16 +48,20 @@ public class MainWindow extends Application {
   private GridPane grid;
   private @Getter ControlPanel controlPanel;
   private CustomEffectPanel customPanel;
+  private @Getter PartyModule partyModule;
 
   private MainWindow instance;
 
-  public void start(Stage primaryStage) throws Exception {
+  public void start(Stage primaryStage) {
     instance = this;
+
+    controller.setServer(new Server(instance));
 
     window = primaryStage;
 
     controlPanel = new ControlPanel();
     customPanel = new CustomEffectPanel();
+    partyModule = new PartyModule();
 
     //Menubar
     MenuBar menu = new MenuBar();
@@ -184,7 +189,7 @@ public class MainWindow extends Application {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    partyModuleB.setOnAction(e -> new PartyModule());
+    partyModuleB.setOnAction(e -> partyModule.show());
 
     Tooltip partyModuleT = new Tooltip();
     partyModuleT.setText("Party Module");
@@ -214,7 +219,7 @@ public class MainWindow extends Application {
 
     //Center
     grid = new GridPane();
-    grid.setMinSize(750, 700);
+    grid.setMinSize(400, 400);
 
     //South
     ObservableList<String> ports = FXCollections.observableArrayList(controller.getSerial().getPorts());
@@ -225,12 +230,12 @@ public class MainWindow extends Application {
     });
     //
     BorderPane pane = new BorderPane();
-    pane.setMinSize(800, 800);
+    pane.setMinSize(800, 600);
     pane.setTop(north);
     pane.setCenter(grid);
     pane.setBottom(portSelector);
 
-    Scene scene = new Scene(pane, 800, 800);
+    Scene scene = new Scene(pane, 800, 600);
     window.setScene(scene);
 
     window.setOnCloseRequest(e -> {
