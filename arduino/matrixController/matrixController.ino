@@ -4,22 +4,24 @@
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_GFX.h>
 
-const int DIN = 6;
-const int width = 13;
-const int height = 10;
+#define DIN = 6;
+//const int width = 13;
+//const int height = 10;
 
-String color, r, g, b;
+#define ledsCount 9;
 
-const int byteLength = width * height * 12 + 1;
+//String color, r, g, b;
 
-Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(width, height, DIN,
+const int byteLength = width * height * 3 + 1;
+
+/*Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(width, height, DIN,
   NEO_MATRIX_TOP     + NEO_MATRIX_RIGHT +
   NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
-  NEO_RGB            + NEO_KHZ800);
+  NEO_RGB            + NEO_KHZ800);*/
 
 void setup() {
-  matrix.begin();
-  matrix.show();
+  /*matrix.begin();
+  matrix.show();*/
   Serial.begin(250000);
 }
 
