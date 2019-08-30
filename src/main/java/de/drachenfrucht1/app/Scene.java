@@ -18,7 +18,7 @@ class Scene {
   private final int fadeTime; //fadetime in ms
 
   public void fade() {
-    int steps = fadeTime / 16;
+    int steps = fadeTime / MatrixController.SENDTIME;
 
     ArrayList<Pixel> old = MainWindow.controller.getPixels();
     for (int i = 1; i <= steps; i++) {

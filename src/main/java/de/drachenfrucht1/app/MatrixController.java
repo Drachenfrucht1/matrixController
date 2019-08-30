@@ -16,6 +16,8 @@ import java.util.ArrayList;
  */
 public class MatrixController {
 
+  public final static int SENDTIME = 20; //ms
+
   private @Getter @Setter Project project;
   private @Getter SerialComm serial;
   private @Getter ArrayList<Pixel> pixels = new ArrayList<>();
@@ -37,7 +39,7 @@ public class MatrixController {
     Color[][] colors = new Color[project.getWidth()][project.getHeight()];
     int index = 0;
     for (int x = 0; x < project.getWidth(); x++) {
-      for (int y = 0; y < project.getWidth(); y++) {
+      for (int y = 0; y < project.getHeight(); y++) {
         colors[x][y] = pixels.get(index).getColor();
         index++;
       }

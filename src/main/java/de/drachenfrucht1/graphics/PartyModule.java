@@ -1,6 +1,7 @@
 package de.drachenfrucht1.graphics;
 
 import de.drachenfrucht1.app.Led;
+import de.drachenfrucht1.app.MatrixController;
 import de.drachenfrucht1.app.Pixel;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -253,7 +254,7 @@ public class PartyModule {
           fadeTime = beat-20;
         }
 
-        int steps = fadeTime/80;
+        int steps = fadeTime/MatrixController.SENDTIME;
 
         if(steps == 0) steps = 1;
 

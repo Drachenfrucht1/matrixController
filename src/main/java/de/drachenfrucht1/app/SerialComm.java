@@ -25,9 +25,9 @@ public class SerialComm {
 
   private @Getter boolean connected = false;
   private SerialPort port;
-  private ArrayList<String> queue = new ArrayList<>();
+  private ArrayList<byte[]> queue = new ArrayList<>();
   private ArrayList<Color[][]> queue2 = new ArrayList<>();
-  private String last = "";
+  private byte[] last;
   private Color[][] last2 = new Color[0][0];
   Thread sendThread = new Thread(() -> {
     try {
@@ -46,23 +46,28 @@ public class SerialComm {
         } catch (Exception e) {
           e.printStackTrace();
         }
-      } else if (last.equals("")) {
-        String msg = "";
+      } else if (last == null) {
+        byte[] msg = new byte[MainWindow.controller.getProject().getLeds()*3 + 1];
+        int index = 0;
+
         for (int i = 0; i < MainWindow.controller.getProject().getLeds(); i++) {
-          msg += "255.255.255:";
+          msg[index] = (byte) 0;
+          index++;
+          msg[index] = (byte) 0;
+          index++;
+          msg[index] = (byte) 0;
+          index++;
         }
-        msg += "!";
+        msg[index] = (byte) 1;
         last = msg;
       }
-      //TODO bytes anstatt string schicken
-      byte[] b = last.getBytes();
-      port.writeBytes(b, b.length);
+      port.writeBytes(last, last.length);
       MainWindow.controller.updatePixel(last2);
       MainWindow.controller.getServer().getHandler().sendUpdate(new WebServerUpdate(last2, MainWindow.controller.getProject().getWidth(), MainWindow.controller.getProject().getHeight(), Update.pixel));
       try {
         int needed = (int) ChronoUnit.MILLIS.between(time1, ZonedDateTime.now());
         System.out.println("Needed: " + needed);
-        if (needed < 80) Thread.sleep(80 - needed);
+        if (needed < MatrixController.SENDTIME) Thread.sleep(MatrixController.SENDTIME - needed);
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -135,19 +140,26 @@ public class SerialComm {
    */
   public void addUpdate(Color[][] pixels) {
     if (connected) {
-      String msg = "";
+      byte[] msg = new byte[MainWindow.controller.getProject().getLeds()*3 + 1];
+      int index = 0;
       for (int x = 0; x < pixels.length; x++) {
         Color[] row = pixels[x];
         for (int y = 0; y < row.length; y++) {
           int r = (int) (row[y].getRed() * 255);
           int g = (int) (row[y].getGreen() * 255);
           int b = (int) (row[y].getBlue() * 255);
-          msg += r + "." + g + "." + b + ":";
+          msg[index] = (byte) r;
+          index++;
+          msg[index] = (byte) g;
+          index++;
+          msg[index] = (byte) b;
+          index++;
         }
       }
-      msg += "!";
+      msg[MainWindow.controller.getProject().getLeds()*3] = (byte) 1;
+
       queue.add(msg);
-      System.out.println(msg);
+      //System.out.println(msg);
       System.out.println("Size: " + queue.size());
       queue2.add(pixels);
     }

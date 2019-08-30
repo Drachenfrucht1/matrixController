@@ -4,6 +4,8 @@ import de.drachenfrucht1.app.MatrixController;
 import de.drachenfrucht1.graphics.MainWindow;
 import javafx.application.Application;
 
+import java.nio.ByteBuffer;
+
 /**
  * Created by Dominik on 21.05.2018.
  * Version: 0.0.1
