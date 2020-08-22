@@ -11,12 +11,12 @@ import lombok.Data;
 public @Data
 class WebServerUpdate {
 
-  private final Color[][] pixels;
-  private final int width;
-  private final int height;
-  private final Update mode;
+    private final Color[][] pixels;
+    private final int width;
+    private final int height;
+    private final Update mode;
 
-  public enum Update {
-    pixel
-  }
+    public enum Update {
+        pixel
+    }
 }

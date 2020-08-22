@@ -8,5 +8,5 @@ import javafx.scene.paint.Color;
  * Project: matrixController
  */
 public class Effect {
-  Color[][] pixels;
+    Color[][] pixels;
 }

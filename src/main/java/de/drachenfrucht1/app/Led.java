@@ -10,13 +10,13 @@ import lombok.Data;
  */
 public @Data
 class Led {
-  private Color color;
+    private Color color;
 
-  public Led() {
-    color = Color.BLACK;
-  }
+    public Led() {
+        color = Color.BLACK;
+    }
 
-  public Led(Color color) {
-    this.color = color;
-  }
+    public Led(Color color) {
+        this.color = color;
+    }
 }

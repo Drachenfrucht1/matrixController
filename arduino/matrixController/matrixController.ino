@@ -1,5 +1,4 @@
 #include <MemoryFree.h>
-//#include <pgmStrToRAM.h>
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_GFX.h>

@@ -15,89 +15,89 @@ import javafx.stage.Stage;
  */
 public class ControlPanel {
 
-  private Stage window;
-  private GridPane grid;
+    private final Stage window;
+    private final GridPane grid;
 
-  private ControllPanelMode mode;
+    private ControllPanelMode mode;
 
-  public ControlPanel() {
+    public ControlPanel() {
 
-    window = new Stage();
+        window = new Stage();
 
-    grid = new GridPane();
+        grid = new GridPane();
 
-    for(int x = 0; x < 6; x++) {
-      for(int y = 0; y < 24; y++) {
-        Button b = new Button();
-        b.setPrefSize(100, 25);
-        GridPane.setConstraints(b, x, y);
-        grid.getChildren().add(b);
-      }
+        for (int x = 0; x < 6; x++) {
+            for (int y = 0; y < 24; y++) {
+                Button b = new Button();
+                b.setPrefSize(100, 25);
+                GridPane.setConstraints(b, x, y);
+                grid.getChildren().add(b);
+            }
+        }
+
+        window.setScene(new javafx.scene.Scene(grid, 600, 600));
+
+        Image icon64 = new Image("file:icons/control-panel.png");
+        window.getIcons().addAll(icon64);
+
+        window.setResizable(false);
     }
 
-    window.setScene(new javafx.scene.Scene(grid, 600, 600));
-
-    Image icon64 = new Image("file:icons\\control-panel.png");
-    window.getIcons().addAll(icon64);
-
-    window.setResizable(false);
-  }
-
-  public void reload() {
-    switch(mode) {
-      case Scenes:
-        window.setTitle("KontrollPanel - Szenen");
-        if(MainWindow.controller.getProject().getScenes().size() == 0) {
-          return;
+    public void reload() {
+        switch (mode) {
+            case Scenes:
+                window.setTitle("KontrollPanel - Szenen");
+                if (MainWindow.controller.getProject().getScenes().size() == 0) {
+                    return;
+                }
+                try {
+                    for (int i = 0; i < MainWindow.controller.getProject().getScenes().size() || i < 144; i++) {
+                        Node n = grid.getChildren().get(i);
+                        if (n instanceof Button) {
+                            Button b = (Button) n;
+                            b.setStyle("-fx-font-size: 8px;");
+                            b.setText(MainWindow.controller.getProject().getScenes().get(i).getName());
+                            final Scene s = MainWindow.controller.getProject().getScenes().get(i);
+                            b.setOnAction(e -> s.fade());
+                        }
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    System.err.println("Unknown stupid error ControlPanel:60");
+                }
+                break;
+            case OverlayScenes:
+                window.setTitle("KontrollPanel - OverlaySzenen");
+                if (MainWindow.controller.getProject().getOverlayScenes().size() == 0) {
+                    return;
+                }
+                try {
+                    for (int i = 0; i < MainWindow.controller.getProject().getOverlayScenes().size() || i < 144; i++) {
+                        Node n = grid.getChildren().get(i);
+                        if (n instanceof Button) {
+                            Button b = (Button) n;
+                            b.setStyle("-fx-font-size: 8px;");
+                            b.setText(MainWindow.controller.getProject().getOverlayScenes().get(i).getName());
+                            final OverlayScene s = MainWindow.controller.getProject().getOverlayScenes().get(i);
+                            b.setOnAction(e -> MainWindow.controller.setOverlay(s));
+                        }
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    System.err.println("Unknown stupid error ControlPanel:60");
+                }
+                break;
+            //TODO EffectPanel
         }
-        try {
-          for (int i = 0; i < MainWindow.controller.getProject().getScenes().size() || i < 144; i++) {
-            Node n = grid.getChildren().get(i);
-            if (n instanceof Button) {
-              Button b = (Button) n;
-              b.setStyle("-fx-font-size: 8px;");
-              b.setText(MainWindow.controller.getProject().getScenes().get(i).getName());
-              final Scene s = MainWindow.controller.getProject().getScenes().get(i);
-              b.setOnAction(e -> s.fade());
-            }
-          }
-        } catch (IndexOutOfBoundsException e) {
-          System.err.println("Unknown stupid error ControlPanel:60");
-        }
-        break;
-      case OverlayScenes:
-        window.setTitle("KontrollPanel - OverlaySzenen");
-        if(MainWindow.controller.getProject().getOverlayScenes().size() == 0) {
-          return;
-        }
-        try {
-          for (int i = 0; i < MainWindow.controller.getProject().getOverlayScenes().size() || i < 144; i++) {
-            Node n = grid.getChildren().get(i);
-            if (n instanceof Button) {
-              Button b = (Button) n;
-              b.setStyle("-fx-font-size: 8px;");
-              b.setText(MainWindow.controller.getProject().getOverlayScenes().get(i).getName());
-              final OverlayScene s = MainWindow.controller.getProject().getOverlayScenes().get(i);
-              b.setOnAction(e -> MainWindow.controller.setOverlay(s));
-            }
-          }
-        } catch (IndexOutOfBoundsException e) {
-          System.err.println("Unknown stupid error ControlPanel:60");
-        }
-        break;
-        //TODO EffectPanel
     }
-  }
 
-  public void show(ControllPanelMode mode) {
-    this.mode = mode;
-    window.show();
-    reload();
-  }
+    public void show(ControllPanelMode mode) {
+        this.mode = mode;
+        window.show();
+        reload();
+    }
 
-  public enum ControllPanelMode {
-    Scenes,
-    OverlayScenes,
-    Effects
-  }
+    public enum ControllPanelMode {
+        Scenes,
+        OverlayScenes,
+        Effects
+    }
 }

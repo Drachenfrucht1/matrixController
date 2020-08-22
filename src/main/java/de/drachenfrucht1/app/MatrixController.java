@@ -16,62 +16,72 @@ import java.util.ArrayList;
  */
 public class MatrixController {
 
-  public final static int SENDTIME = 20; //ms
+    public final static int SENDTIME = 20; //ms
 
-  private @Getter @Setter Project project;
-  private @Getter SerialComm serial;
-  private @Getter ArrayList<Pixel> pixels = new ArrayList<>();
+    private @Getter
+    @Setter
+    Project project;
+    private @Getter
+    final
+    SerialComm serial;
+    private @Getter
+    final
+    ArrayList<Pixel> pixels = new ArrayList<>();
 
-  private @Getter @Setter OverlayScene overlay;
+    private @Getter
+    @Setter
+    OverlayScene overlay;
 
-  private @Getter @Setter Server server;
+    private @Getter
+    @Setter
+    Server server;
 
-  public MatrixController() {
-    project = new Project("Unnamed", 13, 10);
-    serial = new SerialComm();
-  }
-
-  /**
-   * FUNCTION: sendLiveUpdate()
-   * PURPOSE: send the live status of the viewport to the arduino
-   */
-  public void sendLiveUpdate() {
-    Color[][] colors = new Color[project.getWidth()][project.getHeight()];
-    int index = 0;
-    for (int x = 0; x < project.getWidth(); x++) {
-      for (int y = 0; y < project.getHeight(); y++) {
-        colors[x][y] = pixels.get(index).getColor();
-        index++;
-      }
+    public MatrixController() {
+        project = new Project("Unnamed", 13, 10);
+        serial = new SerialComm();
     }
-    serial.addUpdate(applyOverlay(colors));
-  }
 
-  public Color[][] applyOverlay(Color[][] input) {
-    if(overlay == null) overlay = OverlayScene.getBlankOverlay();
-    Color[][] pixels = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getHeight()];
-    for(int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
-      for(int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
-        if(overlay.getPixels()[x][y] == Color.TRANSPARENT) {
-          pixels[x][y] = input[x][y];
-        } else {
-          pixels[x][y] = overlay.getPixels()[x][y];
+    /**
+     * FUNCTION: sendLiveUpdate()
+     * PURPOSE: send the live status of the viewport to the arduino
+     */
+    public void sendLiveUpdate() {
+        Color[][] colors = new Color[project.getWidth()][project.getHeight()];
+        int index = 0;
+        for (int x = 0; x < project.getWidth(); x++) {
+            for (int y = 0; y < project.getHeight(); y++) {
+                colors[x][y] = pixels.get(index).getColor();
+                index++;
+            }
         }
-      }
+        serial.addUpdate(applyOverlay(colors));
     }
-    return pixels;
-  }
 
-  public void updatePixel(Color[][] colors) {
-    if (colors.length == 0) return;
-    Platform.runLater(() -> {
-      int index = 0;
-      for (int x = 0; x < getProject().getWidth(); x++) {
-        for (int y = 0; y < getProject().getHeight(); y++) {
-          getPixels().get(index).setColor(colors[x][y]);
-          index++;
+    public Color[][] applyOverlay(Color[][] input) {
+        if (overlay == null) overlay = OverlayScene.getBlankOverlay();
+        Color[][] pixels = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getHeight()];
+        for (int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
+            for (int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
+                if (overlay.getPixels()[x][y] == Color.TRANSPARENT) {
+                    pixels[x][y] = input[x][y];
+                } else {
+                    pixels[x][y] = overlay.getPixels()[x][y];
+                }
+            }
         }
-      }
-    });
-  }
+        return pixels;
+    }
+
+    public void updatePixel(Color[][] colors) {
+        if (colors.length == 0) return;
+        Platform.runLater(() -> {
+            int index = 0;
+            for (int x = 0; x < getProject().getWidth(); x++) {
+                for (int y = 0; y < getProject().getHeight(); y++) {
+                    getPixels().get(index).setColor(colors[x][y]);
+                    index++;
+                }
+            }
+        });
+    }
 }

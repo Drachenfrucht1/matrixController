@@ -13,17 +13,19 @@ import lombok.Getter;
 public @Data
 class OverlayScene {
 
-  private final @Getter String name;
-  private final @Getter Color[][] pixels;
+    private final @Getter
+    String name;
+    private final @Getter
+    Color[][] pixels;
 
-  public static OverlayScene getBlankOverlay() {
-    Color[][] pixels = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getHeight()];
-    for(int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
-      for(int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
-        pixels[x][y] = Color.TRANSPARENT;
-      }
+    public static OverlayScene getBlankOverlay() {
+        Color[][] pixels = new Color[MainWindow.controller.getProject().getWidth()][MainWindow.controller.getProject().getHeight()];
+        for (int x = 0; x < MainWindow.controller.getProject().getWidth(); x++) {
+            for (int y = 0; y < MainWindow.controller.getProject().getHeight(); y++) {
+                pixels[x][y] = Color.TRANSPARENT;
+            }
+        }
+        return new OverlayScene("Blank", pixels);
     }
-    return new OverlayScene("Blank", pixels);
-  }
 
 }

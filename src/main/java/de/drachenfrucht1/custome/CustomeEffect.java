@@ -6,8 +6,11 @@ package de.drachenfrucht1.custome;
  * Project: matrixController
  */
 public interface CustomeEffect {
-  void run(int width, int height);
-  void stop();
-  String getName();
-  boolean isRunning();
+    void run(int width, int height);
+
+    void stop();
+
+    String getName();
+
+    boolean isRunning();
 }

@@ -12,15 +12,19 @@ import org.webbitserver.WebServers;
  */
 public class Server {
 
-  private @Getter WebServer webServer;
-  private @Getter WSHandler handler;
+    private @Getter
+    final
+    WebServer webServer;
+    private @Getter
+    final
+    WSHandler handler;
 
-  public Server(MainWindow mainWindow) {
-    handler = new WSHandler(mainWindow);
+    public Server(MainWindow mainWindow) {
+        handler = new WSHandler(mainWindow);
 
-    webServer = WebServers.createWebServer(8080);
-    webServer.add(new StaticHandler());
-    webServer.add("/ws_connect", handler);
-    webServer.start();
-  }
+        webServer = WebServers.createWebServer(8080);
+        webServer.add(new StaticHandler());
+        webServer.add("/ws_connect", handler);
+        webServer.start();
+    }
 }

@@ -17,52 +17,52 @@ import javafx.stage.Stage;
  */
 public class CreateProject {
 
-  public CreateProject(MainWindow mainWindow) {
-    Stage window = new Stage();
+    public CreateProject(MainWindow mainWindow) {
+        Stage window = new Stage();
 
-    Label nameL = new Label("Name");
-    TextField nameF = new TextField();
+        Label nameL = new Label("Name");
+        TextField nameF = new TextField();
 
-    HBox name = new HBox();
-    name.getChildren().addAll(nameL, nameF);
+        HBox name = new HBox();
+        name.getChildren().addAll(nameL, nameF);
 
-    Label widthL = new Label("Breite");
-    TextField widthF = new TextField("3");
-    widthF.setMaxWidth(50);
+        Label widthL = new Label("Breite");
+        TextField widthF = new TextField("3");
+        widthF.setMaxWidth(50);
 
-    Label heightL = new Label("Höhe");
-    TextField heightF = new TextField("3");
-    heightF.setMaxWidth(50);
+        Label heightL = new Label("Höhe");
+        TextField heightF = new TextField("3");
+        heightF.setMaxWidth(50);
 
-    HBox dimensions = new HBox();
-    dimensions.getChildren().addAll(widthL, widthF, heightL, heightF);
+        HBox dimensions = new HBox();
+        dimensions.getChildren().addAll(widthL, widthF, heightL, heightF);
 
-    Button save = new Button("Save");
-    save.setOnAction(e -> {
-      window.close();
+        Button save = new Button("Save");
+        save.setOnAction(e -> {
+            window.close();
 
-      MainWindow.controller.setProject(new Project(nameF.getText(), Integer.parseInt(widthF.getText()), Integer.parseInt(heightF.getText())));
+            MainWindow.controller.setProject(new Project(nameF.getText(), Integer.parseInt(widthF.getText()), Integer.parseInt(heightF.getText())));
 
-      mainWindow.reload();
-      mainWindow.getWindow().setTitle("Matrix Controller - " + nameF.getText());
-    });
+            mainWindow.reload();
+            mainWindow.getWindow().setTitle("Matrix Controller - " + nameF.getText());
+        });
 
-    Button cancel = new Button("Cancel");
-    cancel.setOnAction(e -> window.close());
+        Button cancel = new Button("Cancel");
+        cancel.setOnAction(e -> window.close());
 
-    HBox buttons = new HBox();
-    buttons.getChildren().addAll(save, cancel);
+        HBox buttons = new HBox();
+        buttons.getChildren().addAll(save, cancel);
 
-    VBox pane = new VBox(name, dimensions, buttons);
+        VBox pane = new VBox(name, dimensions, buttons);
 
-    Scene scene = new Scene(pane, 200, 100);
-    window.setScene(scene);
+        Scene scene = new Scene(pane, 200, 100);
+        window.setScene(scene);
 
-    window.initModality(Modality.APPLICATION_MODAL);
+        window.initModality(Modality.APPLICATION_MODAL);
 
-    window.setTitle("Erstelle ein neues Projekt");
-    window.setResizable(false);
+        window.setTitle("Erstelle ein neues Projekt");
+        window.setResizable(false);
 
-    window.show();
-  }
+        window.show();
+    }
 }
